@@ -9,7 +9,7 @@
 
 import { FACETS, defaultLevels } from "./facets.js";
 import { createStorage } from "./storage.js";
-import { createTask, toggleDone } from "./tasks.js";
+import { createTask, toggleDone, removeTask } from "./tasks.js";
 
 const storage = createStorage(window.localStorage);
 
@@ -77,6 +77,14 @@ function renderList() {
       });
       checkbox.setAttribute("aria-label", `Mark "${t.title}" as done`);
       checkbox.addEventListener("change", () => onToggle(t.id));
+      const del = el("button", {
+        type: "button",
+        className: "task-delete",
+        textContent: "×",
+        title: "Delete task",
+      });
+      del.setAttribute("aria-label", `Delete "${t.title}"`);
+      del.addEventListener("click", () => onDelete(t.id));
       return el(
         "li",
         {
@@ -86,6 +94,7 @@ function renderList() {
         [
           checkbox,
           el("span", { className: "task-title", textContent: t.title }),
+          del,
         ],
       );
     }),
@@ -94,6 +103,12 @@ function renderList() {
 
 function onToggle(id) {
   state.tasks = state.tasks.map((t) => (t.id === id ? toggleDone(t) : t));
+  persist();
+  renderList();
+}
+
+function onDelete(id) {
+  state.tasks = removeTask(state.tasks, id);
   persist();
   renderList();
 }
