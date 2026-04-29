@@ -164,6 +164,15 @@ button.primary:hover {
   text-decoration: line-through;
 }
 
+.stats {
+  margin-top: var(--space-5);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-border);
+  color: var(--color-text-subtle);
+  font-size: 13px;
+  text-align: center;
+}
+
 .facet-badges {
   display: flex;
   gap: var(--space-1);

@@ -9,7 +9,7 @@
 
 import { FACETS, defaultLevels } from "./facets.js";
 import { createStorage } from "./storage.js";
-import { createTask, toggleDone, removeTask } from "./tasks.js";
+import { createTask, toggleDone, removeTask, activeCount } from "./tasks.js";
 
 const storage = createStorage(window.localStorage);
 
@@ -22,6 +22,7 @@ const els = {
   title: document.getElementById("task-title"),
   facetRow: document.getElementById("facet-row"),
   list: document.getElementById("task-list"),
+  stats: document.getElementById("stats"),
 };
 
 function el(tag, props = {}, children = []) {
@@ -119,16 +120,33 @@ function onToggle(id) {
   state.tasks = state.tasks.map((t) => (t.id === id ? toggleDone(t) : t));
   persist();
   renderList();
+  renderStats();
 }
 
 function onDelete(id) {
   state.tasks = removeTask(state.tasks, id);
   persist();
   renderList();
+  renderStats();
 }
 
 function persist() {
   storage.set("tasks", state.tasks);
+}
+
+function renderStats() {
+  const total = state.tasks.length;
+  if (!total) {
+    els.stats.replaceChildren();
+    return;
+  }
+  const remaining = activeCount(state.tasks);
+  const done = total - remaining;
+  els.stats.replaceChildren(
+    el("span", {
+      textContent: `${remaining} to go · ${done} done · ${total} total`,
+    }),
+  );
 }
 
 els.form.addEventListener("submit", (event) => {
@@ -152,3 +170,4 @@ els.form.addEventListener("submit", (event) => {
 
 renderFacetSelectors();
 renderList();
+renderStats();
