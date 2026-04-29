@@ -1,0 +1,13 @@
+{
+  "name": "prism-planner",
+  "version": "0.1.0",
+  "description": "Local-first day planner that refracts each task into focus, energy, and mood.",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "test": "node tests/run.js",
+    "verify": "node tests/run.js"
+  },
+  "license": "MIT",
+  "author": "Abdul Salam"
+}
