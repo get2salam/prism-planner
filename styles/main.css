@@ -18,15 +18,32 @@ body {
   padding: var(--space-6) var(--space-5);
 }
 
+.app-header {
+  margin-bottom: var(--space-6);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  color: var(--color-text);
+}
+
+.brand-mark {
+  flex: none;
+  color: var(--color-text-muted);
+}
+
 .app-header h1 {
-  margin: 0 0 var(--space-1);
+  margin: 0;
   font-size: 28px;
   letter-spacing: -0.01em;
 }
 
 .tagline {
-  margin: 0;
+  margin: var(--space-2) 0 0;
   color: var(--color-text-muted);
+  font-size: 15px;
 }
 
 .placeholder {
