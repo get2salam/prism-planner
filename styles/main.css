@@ -164,6 +164,22 @@ button.primary:hover {
   text-decoration: line-through;
 }
 
+.facet-badges {
+  display: flex;
+  gap: var(--space-1);
+}
+
+.facet-badge {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 2px 8px;
+  border-radius: 999px;
+  color: var(--badge-color, var(--color-text-muted));
+  border: 1px solid currentColor;
+  background: color-mix(in srgb, var(--badge-color, transparent) 8%, transparent);
+}
+
 .task-delete {
   font: inherit;
   font-size: 18px;

@@ -85,6 +85,19 @@ function renderList() {
       });
       del.setAttribute("aria-label", `Delete "${t.title}"`);
       del.addEventListener("click", () => onDelete(t.id));
+      const badges = el(
+        "div",
+        { className: "facet-badges" },
+        FACETS.map((f) => {
+          const badge = el("span", {
+            className: "facet-badge",
+            textContent: t.facets[f.id],
+            title: `${f.label}: ${t.facets[f.id]}`,
+          });
+          badge.style.setProperty("--badge-color", `var(${f.cssVar})`);
+          return badge;
+        }),
+      );
       return el(
         "li",
         {
@@ -94,6 +107,7 @@ function renderList() {
         [
           checkbox,
           el("span", { className: "task-title", textContent: t.title }),
+          badges,
           del,
         ],
       );
