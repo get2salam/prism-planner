@@ -15,7 +15,29 @@ const storage = createStorage(window.localStorage);
 
 const state = {
   tasks: storage.get("tasks", []),
+  theme: storage.get("theme", prefersDark() ? "dark" : "light"),
 };
+
+function prefersDark() {
+  return window.matchMedia?.("(prefers-color-scheme: dark)").matches ?? false;
+}
+
+function applyTheme() {
+  document.documentElement.dataset.theme = state.theme;
+  if (els.themeToggle) {
+    els.themeToggle.textContent = state.theme === "dark" ? "☀" : "☾";
+    els.themeToggle.setAttribute(
+      "aria-label",
+      state.theme === "dark" ? "Switch to light theme" : "Switch to dark theme",
+    );
+  }
+}
+
+function toggleTheme() {
+  state.theme = state.theme === "dark" ? "light" : "dark";
+  storage.set("theme", state.theme);
+  applyTheme();
+}
 
 const els = {
   form: document.getElementById("task-form"),
@@ -23,7 +45,10 @@ const els = {
   facetRow: document.getElementById("facet-row"),
   list: document.getElementById("task-list"),
   stats: document.getElementById("stats"),
+  themeToggle: document.getElementById("theme-toggle"),
 };
+
+els.themeToggle?.addEventListener("click", toggleTheme);
 
 function el(tag, props = {}, children = []) {
   const node = document.createElement(tag);
@@ -160,6 +185,7 @@ els.form.addEventListener("submit", (event) => {
     els.form.reset();
     renderFacetSelectors();
     renderList();
+    renderStats();
     els.title.focus();
   } catch (err) {
     els.title.setCustomValidity(err.message);
@@ -168,6 +194,7 @@ els.form.addEventListener("submit", (event) => {
   }
 });
 
+applyTheme();
 renderFacetSelectors();
 renderList();
 renderStats();
