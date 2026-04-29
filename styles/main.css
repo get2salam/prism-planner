@@ -131,3 +131,23 @@ button.primary:hover {
   display: grid;
   gap: var(--space-2);
 }
+
+.task-list .empty {
+  color: var(--color-text-subtle);
+  text-align: center;
+  padding: var(--space-5) 0;
+}
+
+.task {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.task-title {
+  flex: 1;
+}
