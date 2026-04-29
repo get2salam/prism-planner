@@ -195,6 +195,23 @@ button.primary:hover {
   text-align: center;
 }
 
+.hints {
+  margin-top: var(--space-3);
+  text-align: center;
+  font-size: 12px;
+  color: var(--color-text-subtle);
+}
+
+kbd {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 2px 6px;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  background: var(--color-surface-muted);
+  color: var(--color-text-muted);
+}
+
 .facet-badges {
   display: flex;
   gap: var(--space-1);

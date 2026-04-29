@@ -50,6 +50,41 @@ const els = {
 
 els.themeToggle?.addEventListener("click", toggleTheme);
 
+/*
+ * Global shortcuts:
+ *   "/"      focus the title input (skipped if user is already typing)
+ *   "Esc"    blur the input
+ *   "g d"    toggle theme (chord — "g" then "d" within 600ms)
+ */
+let chordTimer = null;
+document.addEventListener("keydown", (event) => {
+  const inField =
+    event.target instanceof HTMLElement &&
+    /^(INPUT|TEXTAREA|SELECT)$/.test(event.target.tagName);
+
+  if (event.key === "/" && !inField) {
+    event.preventDefault();
+    els.title.focus();
+    return;
+  }
+  if (event.key === "Escape" && inField) {
+    event.target.blur();
+    return;
+  }
+
+  if (event.key === "g" && !inField) {
+    chordTimer = setTimeout(() => {
+      chordTimer = null;
+    }, 600);
+    return;
+  }
+  if (event.key === "d" && chordTimer) {
+    clearTimeout(chordTimer);
+    chordTimer = null;
+    toggleTheme();
+  }
+});
+
 function el(tag, props = {}, children = []) {
   const node = document.createElement(tag);
   for (const [k, v] of Object.entries(props)) {
