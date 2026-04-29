@@ -151,3 +151,15 @@ button.primary:hover {
 .task-title {
   flex: 1;
 }
+
+.task-check {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--color-accent);
+  cursor: pointer;
+}
+
+.task--done .task-title {
+  color: var(--color-text-subtle);
+  text-decoration: line-through;
+}

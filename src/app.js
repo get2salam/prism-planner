@@ -9,7 +9,7 @@
 
 import { FACETS, defaultLevels } from "./facets.js";
 import { createStorage } from "./storage.js";
-import { createTask } from "./tasks.js";
+import { createTask, toggleDone } from "./tasks.js";
 
 const storage = createStorage(window.localStorage);
 
@@ -69,12 +69,33 @@ function renderList() {
     return;
   }
   els.list.replaceChildren(
-    ...state.tasks.map((t) =>
-      el("li", { className: "task", dataset: { id: t.id } }, [
-        el("span", { className: "task-title", textContent: t.title }),
-      ]),
-    ),
+    ...state.tasks.map((t) => {
+      const checkbox = el("input", {
+        type: "checkbox",
+        className: "task-check",
+        checked: t.done,
+      });
+      checkbox.setAttribute("aria-label", `Mark "${t.title}" as done`);
+      checkbox.addEventListener("change", () => onToggle(t.id));
+      return el(
+        "li",
+        {
+          className: t.done ? "task task--done" : "task",
+          dataset: { id: t.id },
+        },
+        [
+          checkbox,
+          el("span", { className: "task-title", textContent: t.title }),
+        ],
+      );
+    }),
   );
+}
+
+function onToggle(id) {
+  state.tasks = state.tasks.map((t) => (t.id === id ? toggleDone(t) : t));
+  persist();
+  renderList();
 }
 
 function persist() {
