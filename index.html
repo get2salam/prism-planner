@@ -39,8 +39,30 @@
       </header>
 
       <section id="task-area" aria-label="Tasks">
-        <p class="placeholder">App scaffolding — wiring coming next.</p>
+        <form id="task-form" class="task-form" autocomplete="off">
+          <label class="visually-hidden" for="task-title">New task</label>
+          <input
+            id="task-title"
+            name="title"
+            type="text"
+            placeholder="What needs doing?"
+            maxlength="140"
+            required
+          />
+
+          <fieldset class="facet-row" id="facet-row">
+            <legend class="visually-hidden">Facets</legend>
+            <!-- Facet selectors are rendered by app.js so the registry stays
+                 the single source of truth. -->
+          </fieldset>
+
+          <button type="submit" class="primary">Add task</button>
+        </form>
+
+        <ul id="task-list" class="task-list" aria-live="polite"></ul>
       </section>
     </main>
+
+    <script type="module" src="src/app.js"></script>
   </body>
 </html>

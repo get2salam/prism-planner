@@ -46,7 +46,88 @@ body {
   font-size: 15px;
 }
 
-.placeholder {
-  margin-top: var(--space-6);
-  color: var(--color-text-subtle);
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.task-form {
+  display: grid;
+  gap: var(--space-3);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  box-shadow: var(--shadow-sm);
+}
+
+.task-form input[type="text"] {
+  font: inherit;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+  color: var(--color-text);
+  transition: border-color var(--transition-fast);
+}
+
+.task-form input[type="text"]:focus {
+  outline: none;
+  border-color: var(--color-accent);
+}
+
+.facet-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-3);
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.facet {
+  display: grid;
+  gap: var(--space-1);
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.facet select {
+  font: inherit;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+button.primary {
+  font: inherit;
+  font-weight: 600;
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-accent);
+  color: white;
+  border: 0;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: filter var(--transition-fast);
+}
+
+button.primary:hover {
+  filter: brightness(1.05);
+}
+
+.task-list {
+  list-style: none;
+  padding: 0;
+  margin: var(--space-5) 0 0;
+  display: grid;
+  gap: var(--space-2);
 }
