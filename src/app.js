@@ -9,7 +9,14 @@
 
 import { FACETS, defaultLevels } from "./facets.js";
 import { createStorage } from "./storage.js";
-import { createTask, toggleDone, removeTask, activeCount } from "./tasks.js";
+import {
+  createTask,
+  toggleDone,
+  removeTask,
+  clearCompleted,
+  activeCount,
+  completedCount,
+} from "./tasks.js";
 
 const storage = createStorage(window.localStorage);
 
@@ -78,7 +85,7 @@ document.addEventListener("keydown", (event) => {
     }, 600);
     return;
   }
-  if (event.key === "d" && chordTimer) {
+  if (event.key === "d" && chordTimer && !inField) {
     clearTimeout(chordTimer);
     chordTimer = null;
     toggleTheme();
@@ -201,12 +208,29 @@ function renderStats() {
     return;
   }
   const remaining = activeCount(state.tasks);
-  const done = total - remaining;
-  els.stats.replaceChildren(
+  const done = completedCount(state.tasks);
+  const children = [
     el("span", {
       textContent: `${remaining} to go · ${done} done · ${total} total`,
     }),
-  );
+  ];
+  if (done > 0) {
+    const clear = el("button", {
+      type: "button",
+      className: "stats-clear",
+      textContent: "Clear done",
+    });
+    clear.addEventListener("click", onClearCompleted);
+    children.push(clear);
+  }
+  els.stats.replaceChildren(...children);
+}
+
+function onClearCompleted() {
+  state.tasks = clearCompleted(state.tasks);
+  persist();
+  renderList();
+  renderStats();
 }
 
 els.form.addEventListener("submit", (event) => {

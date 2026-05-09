@@ -49,6 +49,14 @@ export function removeTask(tasks, id) {
   return tasks.filter((t) => t.id !== id);
 }
 
+export function clearCompleted(tasks) {
+  return tasks.filter((t) => !t.done);
+}
+
 export function activeCount(tasks) {
   return tasks.reduce((n, t) => (t.done ? n : n + 1), 0);
+}
+
+export function completedCount(tasks) {
+  return tasks.length - activeCount(tasks);
 }

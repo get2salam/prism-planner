@@ -3,7 +3,9 @@ import {
   createTask,
   toggleDone,
   removeTask,
+  clearCompleted,
   activeCount,
+  completedCount,
 } from "../src/tasks.js";
 
 test("createTask builds a task with defaults when no facets given", () => {
@@ -57,4 +59,23 @@ test("activeCount counts tasks that aren't done", () => {
   const c = createTask("c");
   assertEqual(activeCount([a, b, c]), 2);
   assertEqual(activeCount([]), 0);
+});
+
+test("completedCount mirrors activeCount", () => {
+  const a = createTask("a");
+  const b = toggleDone(createTask("b"));
+  const c = toggleDone(createTask("c"));
+  assertEqual(completedCount([a, b, c]), 2);
+  assertEqual(completedCount([]), 0);
+});
+
+test("clearCompleted drops done tasks and preserves order of the rest", () => {
+  const a = createTask("a");
+  const b = toggleDone(createTask("b"));
+  const c = createTask("c");
+  const next = clearCompleted([a, b, c]);
+  assertEqual(
+    next.map((t) => t.title),
+    ["a", "c"],
+  );
 });
