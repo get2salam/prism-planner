@@ -15,7 +15,7 @@
 
 import { defaultLevels, isValidLevel } from "./facets.js";
 
-export function createTask(title, facets = {}) {
+export function createTask(title, facets = {}, now = Date.now()) {
   const trimmed = String(title ?? "").trim();
   if (!trimmed) {
     throw new Error("Task title cannot be empty.");
@@ -27,10 +27,10 @@ export function createTask(title, facets = {}) {
     }
   }
   return {
-    id: `t_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 7)}`,
+    id: `t_${now.toString(36)}_${Math.random().toString(36).slice(2, 7)}`,
     title: trimmed,
     done: false,
-    createdAt: Date.now(),
+    createdAt: now,
     completedAt: null,
     facets: merged,
   };

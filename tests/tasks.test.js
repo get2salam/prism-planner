@@ -30,6 +30,16 @@ test("createTask rejects unknown facet levels", () => {
   );
 });
 
+test("createTask uses injected now so id and createdAt agree", () => {
+  const fixed = 1700000000000;
+  const t = createTask("read", {}, fixed);
+  assertEqual(t.createdAt, fixed);
+  assert(
+    t.id.includes(fixed.toString(36)),
+    `id "${t.id}" should embed timestamp ${fixed.toString(36)}`,
+  );
+});
+
 test("toggleDone flips done and stamps completedAt", () => {
   const t = createTask("read");
   const t2 = toggleDone(t, 1700000000000);
