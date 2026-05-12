@@ -15,10 +15,19 @@
 
 import { defaultLevels, isValidLevel } from "./facets.js";
 
+// Mirrors the `maxlength` on #task-title in index.html so titles entered
+// through the form and titles created programmatically share one invariant.
+export const MAX_TITLE_LENGTH = 140;
+
 export function createTask(title, facets = {}, now = Date.now()) {
   const trimmed = String(title ?? "").trim();
   if (!trimmed) {
     throw new Error("Task title cannot be empty.");
+  }
+  if (trimmed.length > MAX_TITLE_LENGTH) {
+    throw new Error(
+      `Task title is ${trimmed.length} characters; max is ${MAX_TITLE_LENGTH}.`,
+    );
   }
   const merged = { ...defaultLevels(), ...facets };
   for (const [facetId, level] of Object.entries(merged)) {

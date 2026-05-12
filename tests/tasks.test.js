@@ -6,6 +6,7 @@ import {
   clearCompleted,
   activeCount,
   completedCount,
+  MAX_TITLE_LENGTH,
 } from "../src/tasks.js";
 
 test("createTask builds a task with defaults when no facets given", () => {
@@ -28,6 +29,21 @@ test("createTask rejects unknown facet levels", () => {
     () => createTask("walk", { focus: "ultradeep" }),
     /Invalid level/i,
   );
+});
+
+test("createTask accepts a title at the max length", () => {
+  const atLimit = "x".repeat(MAX_TITLE_LENGTH);
+  assertEqual(createTask(atLimit).title, atLimit);
+});
+
+test("createTask rejects a title longer than the max length", () => {
+  const tooLong = "x".repeat(MAX_TITLE_LENGTH + 1);
+  assertThrows(() => createTask(tooLong), /max is 140/i);
+});
+
+test("createTask counts length after trimming whitespace", () => {
+  const padded = `   ${"x".repeat(MAX_TITLE_LENGTH)}   `;
+  assertEqual(createTask(padded).title.length, MAX_TITLE_LENGTH);
 });
 
 test("createTask uses injected now so id and createdAt agree", () => {
