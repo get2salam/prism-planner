@@ -79,6 +79,37 @@ test("removeTask drops only the matching id", () => {
   );
 });
 
+test("removeTask returns an equivalent list when the id is not found", () => {
+  const list = [createTask("a"), createTask("b")];
+  const next = removeTask(list, "t_does_not_exist");
+  assertEqual(
+    next.map((t) => t.title),
+    ["a", "b"],
+  );
+});
+
+test("toggleDone does not mutate the input task", () => {
+  const t = createTask("read");
+  const snapshot = JSON.stringify(t);
+  toggleDone(t, 1700000000000);
+  assertEqual(JSON.stringify(t), snapshot);
+});
+
+test("removeTask does not mutate the input list", () => {
+  const list = [createTask("a"), createTask("b"), createTask("c")];
+  const snapshot = JSON.stringify(list);
+  removeTask(list, list[1].id);
+  assertEqual(JSON.stringify(list), snapshot);
+});
+
+test("clearCompleted does not mutate the input list and handles an empty list", () => {
+  const list = [createTask("a"), toggleDone(createTask("b"))];
+  const snapshot = JSON.stringify(list);
+  clearCompleted(list);
+  assertEqual(JSON.stringify(list), snapshot);
+  assertEqual(clearCompleted([]), []);
+});
+
 test("activeCount counts tasks that aren't done", () => {
   const a = createTask("a");
   const b = toggleDone(createTask("b"));
