@@ -31,6 +31,26 @@ test("createTask rejects unknown facet levels", () => {
   );
 });
 
+test("createTask rejects unknown facet ids with a clear error", () => {
+  assertThrows(
+    () => createTask("walk", { banana: "ripe" }),
+    /unknown facet "banana"/i,
+  );
+});
+
+test("createTask reports the unknown facet, not a misleading level error", () => {
+  try {
+    createTask("walk", { banana: "ripe" });
+  } catch (err) {
+    assert(
+      !/invalid level/i.test(err.message),
+      `Expected facet-level error, got: ${err.message}`,
+    );
+    return;
+  }
+  throw new Error("Expected createTask to throw for unknown facet id");
+});
+
 test("createTask accepts a title at the max length", () => {
   const atLimit = "x".repeat(MAX_TITLE_LENGTH);
   assertEqual(createTask(atLimit).title, atLimit);

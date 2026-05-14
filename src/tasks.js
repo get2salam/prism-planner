@@ -13,7 +13,7 @@
  *   }
  */
 
-import { defaultLevels, isValidLevel } from "./facets.js";
+import { defaultLevels, getFacet, isValidLevel } from "./facets.js";
 
 // Mirrors the `maxlength` on #task-title in index.html so titles entered
 // through the form and titles created programmatically share one invariant.
@@ -31,6 +31,9 @@ export function createTask(title, facets = {}, now = Date.now()) {
   }
   const merged = { ...defaultLevels(), ...facets };
   for (const [facetId, level] of Object.entries(merged)) {
+    if (!getFacet(facetId)) {
+      throw new Error(`Unknown facet "${facetId}".`);
+    }
     if (!isValidLevel(facetId, level)) {
       throw new Error(`Invalid level "${level}" for facet "${facetId}".`);
     }
