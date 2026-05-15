@@ -39,6 +39,37 @@ test("set returns false when the backend throws", () => {
   assertEqual(s.set("tasks", []), false);
 });
 
+test("set returns false when the value is not JSON-serializable", () => {
+  const s = createStorage(memoryBackend());
+  const circular = {};
+  circular.self = circular;
+  assertEqual(s.set("tasks", circular), false);
+});
+
+test("get returns the fallback when the backend throws on read", () => {
+  const failing = {
+    getItem: () => {
+      throw new Error("private mode");
+    },
+    setItem: () => {},
+    removeItem: () => {},
+  };
+  const s = createStorage(failing);
+  assertEqual(s.get("tasks", []), []);
+});
+
+test("remove returns false when the backend throws", () => {
+  const failing = {
+    getItem: () => null,
+    setItem: () => {},
+    removeItem: () => {
+      throw new Error("locked");
+    },
+  };
+  const s = createStorage(failing);
+  assertEqual(s.remove("tasks"), false);
+});
+
 test("remove deletes a stored key", () => {
   const s = createStorage(memoryBackend());
   s.set("tasks", [1, 2, 3]);
