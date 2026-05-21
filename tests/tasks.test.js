@@ -86,6 +86,19 @@ test("toggleDone flips done and stamps completedAt", () => {
   assertEqual(t3.completedAt, null);
 });
 
+test("toggleDone preserves id, title, createdAt, and facets", () => {
+  const t = createTask(
+    "deep read",
+    { focus: "deep", energy: "high", mood: "spark" },
+    1700000000000,
+  );
+  const t2 = toggleDone(t, 1700000099999);
+  assertEqual(t2.id, t.id);
+  assertEqual(t2.title, t.title);
+  assertEqual(t2.createdAt, t.createdAt);
+  assertEqual(t2.facets, t.facets);
+});
+
 test("removeTask drops only the matching id", () => {
   const a = createTask("a");
   const b = createTask("b");
@@ -154,5 +167,14 @@ test("clearCompleted drops done tasks and preserves order of the rest", () => {
   assertEqual(
     next.map((t) => t.title),
     ["a", "c"],
+  );
+});
+
+test("clearCompleted returns an equivalent list when nothing is done", () => {
+  const list = [createTask("a"), createTask("b"), createTask("c")];
+  const next = clearCompleted(list);
+  assertEqual(
+    next.map((t) => t.title),
+    ["a", "b", "c"],
   );
 });
