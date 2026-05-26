@@ -38,6 +38,20 @@ test("createTask rejects unknown facet ids with a clear error", () => {
   );
 });
 
+test("createTask accepts null facets as a request for defaults", () => {
+  const t = createTask("walk", null);
+  assertEqual(t.facets, { focus: "steady", energy: "medium", mood: "neutral" });
+});
+
+test("createTask rejects array facets instead of producing a cryptic error", () => {
+  assertThrows(() => createTask("walk", ["focus"]), /plain object/i);
+});
+
+test("createTask rejects non-object facets instead of silently using defaults", () => {
+  assertThrows(() => createTask("walk", "deep"), /plain object/i);
+  assertThrows(() => createTask("walk", 42), /plain object/i);
+});
+
 test("createTask reports the unknown facet, not a misleading level error", () => {
   try {
     createTask("walk", { banana: "ripe" });

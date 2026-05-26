@@ -29,7 +29,14 @@ export function createTask(title, facets = {}, now = Date.now()) {
       `Task title is ${trimmed.length} characters; max is ${MAX_TITLE_LENGTH}.`,
     );
   }
-  const merged = { ...defaultLevels(), ...facets };
+  // Nullish is treated as "use defaults" — but arrays, strings, and numbers
+  // would otherwise either silently no-op or produce a misleading
+  // `Unknown facet "0"` error after spreading.
+  const overrides = facets ?? {};
+  if (typeof overrides !== "object" || Array.isArray(overrides)) {
+    throw new Error("Task facets must be a plain object.");
+  }
+  const merged = { ...defaultLevels(), ...overrides };
   for (const [facetId, level] of Object.entries(merged)) {
     if (!getFacet(facetId)) {
       throw new Error(`Unknown facet "${facetId}".`);
