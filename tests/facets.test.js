@@ -35,3 +35,27 @@ test("defaultLevels picks the middle level for each facet", () => {
 test("FACETS is frozen so it can't be mutated at runtime", () => {
   assert(Object.isFrozen(FACETS));
 });
+
+test("each facet entry and its levels array are also frozen", () => {
+  for (const facet of FACETS) {
+    assert(Object.isFrozen(facet), `facet "${facet.id}" should be frozen`);
+    assert(
+      Object.isFrozen(facet.levels),
+      `levels for "${facet.id}" should be frozen`,
+    );
+  }
+});
+
+test("mutating a facet's levels at runtime is a no-op in strict module code", () => {
+  const focus = getFacet("focus");
+  const before = [...focus.levels];
+  // In strict mode (ES modules) this throws; in sloppy contexts it would
+  // silently fail. Either way, the registry's view must not change.
+  try {
+    focus.levels.push("ultradeep");
+  } catch {
+    // expected in strict mode
+  }
+  assertEqual([...getFacet("focus").levels], before);
+  assert(!isValidLevel("focus", "ultradeep"));
+});
