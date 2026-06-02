@@ -47,6 +47,23 @@ test("createTask rejects array facets instead of producing a cryptic error", () 
   assertThrows(() => createTask("walk", ["focus"]), /plain object/i);
 });
 
+test("createTask rejects object titles instead of storing '[object Object]'", () => {
+  assertThrows(() => createTask({ title: "walk" }), /title must be a string/i);
+});
+
+test("createTask rejects array titles instead of comma-joining them", () => {
+  assertThrows(() => createTask(["walk"]), /title must be a string/i);
+});
+
+test("createTask rejects number titles so the title type stays predictable", () => {
+  assertThrows(() => createTask(42), /title must be a string/i);
+});
+
+test("createTask still treats null and undefined titles as empty", () => {
+  assertThrows(() => createTask(null), /empty/i);
+  assertThrows(() => createTask(undefined), /empty/i);
+});
+
 test("createTask rejects non-object facets instead of silently using defaults", () => {
   assertThrows(() => createTask("walk", "deep"), /plain object/i);
   assertThrows(() => createTask("walk", 42), /plain object/i);

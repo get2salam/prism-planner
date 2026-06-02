@@ -20,7 +20,13 @@ import { defaultLevels, getFacet, isValidLevel } from "./facets.js";
 export const MAX_TITLE_LENGTH = 140;
 
 export function createTask(title, facets = {}, now = Date.now()) {
-  const trimmed = String(title ?? "").trim();
+  // A non-string title would otherwise be coerced via String(), turning {} into
+  // "[object Object]" and arrays into comma-joined nonsense — surface this as
+  // a clear error instead of silently storing garbage.
+  if (title != null && typeof title !== "string") {
+    throw new Error("Task title must be a string.");
+  }
+  const trimmed = (title ?? "").trim();
   if (!trimmed) {
     throw new Error("Task title cannot be empty.");
   }
