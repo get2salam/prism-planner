@@ -16,6 +16,7 @@ import {
   clearCompleted,
   activeCount,
   completedCount,
+  taskCheckboxLabel,
 } from "./tasks.js";
 
 const storage = createStorage(window.localStorage);
@@ -143,7 +144,7 @@ function renderList() {
         className: "task-check",
         checked: t.done,
       });
-      checkbox.setAttribute("aria-label", `Mark "${t.title}" as done`);
+      checkbox.setAttribute("aria-label", taskCheckboxLabel(t));
       checkbox.addEventListener("change", () => onToggle(t.id));
       const del = el("button", {
         type: "button",

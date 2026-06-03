@@ -6,6 +6,7 @@ import {
   clearCompleted,
   activeCount,
   completedCount,
+  taskCheckboxLabel,
   MAX_TITLE_LENGTH,
 } from "../src/tasks.js";
 
@@ -208,4 +209,10 @@ test("clearCompleted returns an equivalent list when nothing is done", () => {
     next.map((t) => t.title),
     ["a", "b", "c"],
   );
+});
+
+test("taskCheckboxLabel announces the action that will happen on toggle", () => {
+  const t = createTask("write notes");
+  assertEqual(taskCheckboxLabel(t), 'Mark "write notes" as done');
+  assertEqual(taskCheckboxLabel(toggleDone(t)), 'Mark "write notes" as not done');
 });

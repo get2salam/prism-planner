@@ -85,3 +85,12 @@ export function activeCount(tasks) {
 export function completedCount(tasks) {
   return tasks.length - activeCount(tasks);
 }
+
+// The action a screen reader user will trigger by toggling the checkbox is
+// the opposite of the task's current state — labelling it "Mark X as done"
+// while it is already done announces the wrong action.
+export function taskCheckboxLabel(task) {
+  return task.done
+    ? `Mark "${task.title}" as not done`
+    : `Mark "${task.title}" as done`;
+}
