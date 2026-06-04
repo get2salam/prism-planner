@@ -76,3 +76,26 @@ test("remove deletes a stored key", () => {
   assert(s.remove("tasks"));
   assertEqual(s.get("tasks", null), null);
 });
+
+// Bumping or renaming the namespace silently orphans every user's stored
+// tasks on next load — locking the exact prefix forces the change to be
+// deliberate and paired with a migration plan.
+test("set writes values under the prism-planner:v1 namespace prefix", () => {
+  const backend = memoryBackend();
+  const s = createStorage(backend);
+  s.set("tasks", [{ id: "t_1", title: "x" }]);
+  assertEqual(
+    backend.getItem("prism-planner:v1:tasks"),
+    JSON.stringify([{ id: "t_1", title: "x" }]),
+  );
+});
+
+test("remove targets the namespaced key and leaves foreign keys alone", () => {
+  const backend = memoryBackend();
+  backend.setItem("tasks", "foreign");
+  const s = createStorage(backend);
+  s.set("tasks", [1, 2, 3]);
+  s.remove("tasks");
+  assertEqual(backend.getItem("prism-planner:v1:tasks"), null);
+  assertEqual(backend.getItem("tasks"), "foreign");
+});
