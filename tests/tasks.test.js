@@ -113,6 +113,17 @@ test("toggleDone rejects a non-finite now so completedAt never round-trips to nu
   assertThrows(() => toggleDone(t, Infinity), /finite number/i);
 });
 
+test("toggleDone rejects a null or undefined task instead of a cryptic TypeError", () => {
+  assertThrows(() => toggleDone(null, 1), /task object/i);
+  assertThrows(() => toggleDone(undefined, 1), /task object/i);
+});
+
+test("toggleDone rejects a non-object task so corrupted storage surfaces clearly", () => {
+  assertThrows(() => toggleDone("nope", 1), /task object/i);
+  assertThrows(() => toggleDone(42, 1), /task object/i);
+  assertThrows(() => toggleDone([], 1), /task object/i);
+});
+
 test("createTask uses injected now so id and createdAt agree", () => {
   const fixed = 1700000000000;
   const t = createTask("read", {}, fixed);

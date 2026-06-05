@@ -73,6 +73,12 @@ export function toggleDone(task, now = Date.now()) {
   if (typeof now !== "number" || !Number.isFinite(now)) {
     throw new Error("toggleDone `now` must be a finite number.");
   }
+  // A null/undefined or primitive `task` would otherwise throw a cryptic
+  // "Cannot read properties of X (reading 'done')" TypeError. Corrupted
+  // storage or a stale reference is easier to diagnose with context.
+  if (task === null || typeof task !== "object" || Array.isArray(task)) {
+    throw new Error("toggleDone `task` must be a task object.");
+  }
   const next = !task.done;
   return {
     ...task,
