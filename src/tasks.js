@@ -20,6 +20,12 @@ import { defaultLevels, getFacet, isValidLevel } from "./facets.js";
 export const MAX_TITLE_LENGTH = 140;
 
 export function createTask(title, facets = {}, now = Date.now()) {
+  // A non-finite `now` would produce an id like "t_NaN_..." and a createdAt
+  // that JSON.stringify silently rewrites to null on persist, breaking any
+  // later sort or comparison by createdAt. Fail loudly at the call site.
+  if (typeof now !== "number" || !Number.isFinite(now)) {
+    throw new Error("Task `now` must be a finite number.");
+  }
   // A non-string title would otherwise be coerced via String(), turning {} into
   // "[object Object]" and arrays into comma-joined nonsense — surface this as
   // a clear error instead of silently storing garbage.
@@ -62,6 +68,11 @@ export function createTask(title, facets = {}, now = Date.now()) {
 }
 
 export function toggleDone(task, now = Date.now()) {
+  // Same hazard as createTask: a non-finite completedAt round-trips through
+  // JSON as null, masking the bug until a stats or sort calculation later.
+  if (typeof now !== "number" || !Number.isFinite(now)) {
+    throw new Error("toggleDone `now` must be a finite number.");
+  }
   const next = !task.done;
   return {
     ...task,

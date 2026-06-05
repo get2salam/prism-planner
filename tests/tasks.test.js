@@ -98,6 +98,21 @@ test("createTask counts length after trimming whitespace", () => {
   assertEqual(createTask(padded).title.length, MAX_TITLE_LENGTH);
 });
 
+test("createTask rejects a non-finite now so createdAt never round-trips to null", () => {
+  // JSON.stringify({ x: NaN }) === '{"x":null}', so a NaN createdAt would
+  // silently become null on persist — surface it at the source instead.
+  assertThrows(() => createTask("walk", {}, NaN), /finite number/i);
+  assertThrows(() => createTask("walk", {}, Infinity), /finite number/i);
+  assertThrows(() => createTask("walk", {}, -Infinity), /finite number/i);
+  assertThrows(() => createTask("walk", {}, "1700000000000"), /finite number/i);
+});
+
+test("toggleDone rejects a non-finite now so completedAt never round-trips to null", () => {
+  const t = createTask("walk");
+  assertThrows(() => toggleDone(t, NaN), /finite number/i);
+  assertThrows(() => toggleDone(t, Infinity), /finite number/i);
+});
+
 test("createTask uses injected now so id and createdAt agree", () => {
   const fixed = 1700000000000;
   const t = createTask("read", {}, fixed);
