@@ -17,12 +17,13 @@ import {
   activeCount,
   completedCount,
   taskCheckboxLabel,
+  normalizeStoredTasks,
 } from "./tasks.js";
 
 const storage = createStorage(window.localStorage);
 
 const state = {
-  tasks: storage.get("tasks", []),
+  tasks: normalizeStoredTasks(storage.get("tasks", [])),
   theme: storage.get("theme", prefersDark() ? "dark" : "light"),
 };
 

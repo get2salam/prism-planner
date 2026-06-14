@@ -8,6 +8,7 @@ import {
   completedCount,
   taskCheckboxLabel,
   MAX_TITLE_LENGTH,
+  normalizeStoredTasks,
 } from "../src/tasks.js";
 
 test("createTask builds a task with defaults when no facets given", () => {
@@ -155,6 +156,50 @@ test("toggleDone preserves id, title, createdAt, and facets", () => {
   assertEqual(t2.title, t.title);
   assertEqual(t2.createdAt, t.createdAt);
   assertEqual(t2.facets, t.facets);
+});
+
+test("normalizeStoredTasks returns an empty list for a corrupt saved payload", () => {
+  assertEqual(normalizeStoredTasks(null), []);
+  assertEqual(normalizeStoredTasks({ tasks: [] }), []);
+});
+
+test("normalizeStoredTasks drops malformed saved tasks before render", () => {
+  const valid = createTask("keep", { focus: "deep" }, 1700000000000);
+  const saved = [
+    valid,
+    null,
+    { ...valid, id: "" },
+    { ...valid, title: "   " },
+    { ...valid, done: "false" },
+    { ...valid, createdAt: NaN },
+    { ...valid, facets: { focus: "ultradeep" } },
+    { ...valid, facets: { banana: "ripe" } },
+  ];
+  assertEqual(normalizeStoredTasks(saved), [valid]);
+});
+
+test("normalizeStoredTasks migrates legacy tasks that have no facets", () => {
+  assertEqual(
+    normalizeStoredTasks([
+      {
+        id: "t_legacy",
+        title: "  imported task  ",
+        done: false,
+        createdAt: 1700000000000,
+        completedAt: 1700000099999,
+      },
+    ]),
+    [
+      {
+        id: "t_legacy",
+        title: "imported task",
+        done: false,
+        createdAt: 1700000000000,
+        completedAt: null,
+        facets: { focus: "steady", energy: "medium", mood: "neutral" },
+      },
+    ],
+  );
 });
 
 test("removeTask drops only the matching id", () => {

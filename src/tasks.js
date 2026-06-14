@@ -19,6 +19,14 @@ import { defaultLevels, getFacet, isValidLevel } from "./facets.js";
 // through the form and titles created programmatically share one invariant.
 export const MAX_TITLE_LENGTH = 140;
 
+function isPlainObject(value) {
+  return value !== null && typeof value === "object" && !Array.isArray(value);
+}
+
+function validTimestamp(value) {
+  return typeof value === "number" && Number.isFinite(value);
+}
+
 export function createTask(title, facets = {}, now = Date.now()) {
   // A non-finite `now` would produce an id like "t_NaN_..." and a createdAt
   // that JSON.stringify silently rewrites to null on persist, breaking any
@@ -85,6 +93,44 @@ export function toggleDone(task, now = Date.now()) {
     done: next,
     completedAt: next ? now : null,
   };
+}
+
+export function normalizeStoredTasks(value) {
+  if (!Array.isArray(value)) return [];
+
+  const normalized = [];
+  for (const task of value) {
+    if (
+      !isPlainObject(task) ||
+      typeof task.id !== "string" ||
+      !task.id ||
+      typeof task.title !== "string" ||
+      !task.title.trim() ||
+      typeof task.done !== "boolean" ||
+      !validTimestamp(task.createdAt) ||
+      !(task.completedAt === null || validTimestamp(task.completedAt))
+    ) {
+      continue;
+    }
+
+    const rawFacets = isPlainObject(task.facets) ? task.facets : {};
+    const facets = { ...defaultLevels(), ...rawFacets };
+    const hasOnlyKnownFacets = Object.keys(rawFacets).every((facetId) =>
+      Boolean(getFacet(facetId)),
+    );
+    const hasValidLevels = Object.entries(facets).every(([facetId, level]) =>
+      isValidLevel(facetId, level),
+    );
+    if (!hasOnlyKnownFacets || !hasValidLevels) continue;
+
+    normalized.push({
+      ...task,
+      title: task.title.trim(),
+      completedAt: task.done ? task.completedAt : null,
+      facets,
+    });
+  }
+  return normalized;
 }
 
 export function removeTask(tasks, id) {
