@@ -8,6 +8,7 @@ actually have, not the day you wish you had.
 
 - Pure HTML / CSS / vanilla JavaScript — no build step, no bundler.
 - Stores everything in your browser (`localStorage`). No server, no account.
+- Shows a deterministic Prism score so the remaining day is easy to audit.
 - Keyboard friendly, light + dark themes, gentle animations, respects
   `prefers-reduced-motion`.
 - Zero runtime dependencies. Tests run on plain Node.
@@ -39,6 +40,7 @@ storage helper.
 | Module           | Responsibility                                              |
 | ---------------- | ----------------------------------------------------------- |
 | `src/facets.js`  | Registry of facets (focus / energy / mood) and their levels |
+| `src/evaluation.js` | Deterministic scoring for active task load                 |
 | `src/tasks.js`   | Pure task lifecycle: create / toggle / remove / count       |
 | `src/storage.js` | `localStorage` wrapper with namespacing + injectable backend|
 | `src/app.js`     | DOM glue. Builds nodes safely (no `innerHTML`)              |

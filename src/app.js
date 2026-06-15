@@ -8,6 +8,7 @@
  */
 
 import { FACETS, defaultLevels } from "./facets.js";
+import { evaluateTaskLoad } from "./evaluation.js";
 import { createStorage } from "./storage.js";
 import {
   createTask,
@@ -211,9 +212,11 @@ function renderStats() {
   }
   const remaining = activeCount(state.tasks);
   const done = completedCount(state.tasks);
+  const load = evaluateTaskLoad(state.tasks);
   const children = [
     el("span", {
-      textContent: `${remaining} to go · ${done} done · ${total} total`,
+      textContent: `${remaining} to go · ${done} done · ${total} total · Prism score ${load.score}/100 (${load.label})`,
+      title: load.risks.join(" "),
     }),
   ];
   if (done > 0) {
