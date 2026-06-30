@@ -55,8 +55,22 @@ const els = {
   facetRow: document.getElementById("facet-row"),
   list: document.getElementById("task-list"),
   stats: document.getElementById("stats"),
+  status: document.getElementById("a11y-status"),
   themeToggle: document.getElementById("theme-toggle"),
 };
+
+// Clears then sets the role="status" region so screen readers announce the
+// message even if the previous text was identical (re-assigning the same
+// textContent doesn't trigger a re-read in most AT implementations).
+let _announceTimer = null;
+function announce(text) {
+  if (!els.status) return;
+  els.status.textContent = "";
+  clearTimeout(_announceTimer);
+  _announceTimer = setTimeout(() => {
+    els.status.textContent = text;
+  }, 50);
+}
 
 els.themeToggle?.addEventListener("click", toggleTheme);
 
@@ -117,16 +131,22 @@ function renderFacetSelectors() {
   const defaults = defaultLevels();
   els.facetRow.replaceChildren(
     ...FACETS.map((facet) => {
-      const select = el("select", { name: facet.id });
+      const descId = `facet-desc-${facet.id}`;
+      const select = el("select", { name: facet.id, "aria-describedby": descId });
       for (const lvl of facet.levels) {
         const opt = el("option", { value: lvl, textContent: lvl });
         if (lvl === defaults[facet.id]) opt.selected = true;
         select.append(opt);
       }
+      const desc = el("span", {
+        id: descId,
+        className: "visually-hidden",
+        textContent: facet.description,
+      });
       return el(
         "label",
         { className: "facet", dataset: { facet: facet.id } },
-        [el("span", { textContent: facet.label }), select],
+        [el("span", { textContent: facet.label }), select, desc],
       );
     }),
   );
@@ -187,17 +207,24 @@ function renderList() {
 }
 
 function onToggle(id) {
+  const before = state.tasks.find((t) => t.id === id);
   state.tasks = state.tasks.map((t) => (t.id === id ? toggleDone(t) : t));
   persist();
   renderList();
   renderStats();
+  if (before) {
+    const after = state.tasks.find((t) => t.id === id);
+    announce(after?.done ? `"${before.title}" marked done` : `"${before.title}" marked not done`);
+  }
 }
 
 function onDelete(id) {
+  const task = state.tasks.find((t) => t.id === id);
   state.tasks = removeTask(state.tasks, id);
   persist();
   renderList();
   renderStats();
+  if (task) announce(`"${task.title}" removed`);
 }
 
 function persist() {
@@ -214,10 +241,15 @@ function renderStats() {
   const done = completedCount(state.tasks);
   const load = evaluateTaskLoad(state.tasks);
   const children = [
-    el("span", {
-      textContent: `${remaining} to go · ${done} done · ${total} total · Prism score ${load.score}/100 (${load.label})`,
-      title: load.risks.join(" "),
-    }),
+    el("span", {}, [
+      el("span", {
+        textContent: `${remaining} to go · ${done} done · ${total} total · Prism score ${load.score}/100 (${load.label})`,
+      }),
+      el("span", {
+        className: "visually-hidden",
+        textContent: `Risks: ${load.risks.join(" ")}`,
+      }),
+    ]),
   ];
   if (done > 0) {
     const clear = el("button", {
@@ -250,6 +282,7 @@ els.form.addEventListener("submit", (event) => {
     renderFacetSelectors();
     renderList();
     renderStats();
+    announce(`"${task.title}" added`);
     els.title.focus();
   } catch (err) {
     els.title.setCustomValidity(err.message);

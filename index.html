@@ -65,9 +65,11 @@
           <button type="submit" class="primary">Add task</button>
         </form>
 
-        <ul id="task-list" class="task-list" aria-live="polite"></ul>
+        <ul id="task-list" class="task-list" aria-live="polite" aria-relevant="additions removals"></ul>
 
         <footer id="stats" class="stats" aria-live="polite"></footer>
+
+        <p id="a11y-status" role="status" class="visually-hidden" aria-atomic="true"></p>
 
         <p class="hints">
           Press <kbd>/</kbd> to add a task · <kbd>g</kbd> then <kbd>d</kbd> to

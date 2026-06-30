@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
 
-import { test, assertEqual } from "./harness.js";
+import { test, assert, assertEqual } from "./harness.js";
 import { MAX_TITLE_LENGTH } from "../src/tasks.js";
 
 // Lock in the invariant declared in src/tasks.js: the form's max title length
@@ -26,4 +26,21 @@ test("index.html #task-title maxlength matches MAX_TITLE_LENGTH", () => {
     throw new Error("#task-title is missing a maxlength attribute");
   }
   assertEqual(Number(lenMatch[1]), MAX_TITLE_LENGTH);
+});
+
+test("index.html has a role=status live region for polite task announcements", () => {
+  const match = html.match(/<p\b[^>]*\bid="a11y-status"[^>]*>/);
+  if (!match) throw new Error('No <p id="a11y-status"> found in index.html');
+  const tag = match[0];
+  assert(/role="status"/.test(tag), '#a11y-status is missing role="status"');
+  assert(/aria-atomic="true"/.test(tag), '#a11y-status is missing aria-atomic="true"');
+  assert(/class="visually-hidden"/.test(tag), '#a11y-status is missing class="visually-hidden"');
+});
+
+test("index.html #task-list declares aria-relevant so only additions/removals are announced", () => {
+  const match = html.match(/<ul\b[^>]*\bid="task-list"[^>]*>/);
+  if (!match) throw new Error('No <ul id="task-list"> found in index.html');
+  const tag = match[0];
+  assert(/aria-live="polite"/.test(tag), '#task-list is missing aria-live="polite"');
+  assert(/aria-relevant="additions removals"/.test(tag), '#task-list is missing aria-relevant="additions removals"');
 });
