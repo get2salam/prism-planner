@@ -35,6 +35,16 @@ The runner is hand-rolled (`tests/run.js`) so the project has no `node_modules`
 and no `package-lock.json`. Tests cover the facets registry, task model, and
 storage helper.
 
+To iterate on a single area without waiting on the full suite, pass one or
+more filters — they match by substring against the test file name:
+
+```
+node tests/run.js facets
+node tests/run.js tasks storage
+```
+
+With no filters the full suite runs, same as `npm test`.
+
 ## How it works
 
 | Module           | Responsibility                                              |
